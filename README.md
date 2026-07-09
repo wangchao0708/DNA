@@ -69,7 +69,7 @@ DNA_SD2_results.csv
 
 Use `Evaluate_Accuracy.py` in test mode to compute attribution accuracy from the CSV files produced by the DNA family scripts.
 
-The default `TEST_CONFIGS` entries already use the same CSV names listed above. Before running test mode, fill in each entry with the finalized parameters for that family:
+Before running test mode, fill in each entry with the finalized parameters for that family:
 
 | Parameter | Meaning | Reference value |
 | --- | --- | --- |
