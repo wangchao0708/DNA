@@ -1,8 +1,8 @@
-# DNA
+# Introduction
 
 This repository hosts the official PyTorch implementation of the paper:
 
-**DNA: Tracing Generated Images to Source Models via Dual-stage Native Attribution**
+**“DNA: Tracing Generated Images to Source Models via Dual-stage Native Attribution”**
 
 The released files contain the core attribution scripts used by DNA. Before running the code, users should configure their own image paths, selected timesteps or sigmas, noise counts, random seeds, and output settings.
 
@@ -21,6 +21,22 @@ Install the required dependencies:
 pip install -r requirements.txt
 ```
 
+## License
+
+This repository is released under the MIT License. See `LICENSE` for details.
+
+## Model Cache Note
+
+The family scripts run in Hugging Face offline mode by default:
+
+```python
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+os.environ["HF_DATASETS_OFFLINE"] = "1"
+```
+
+This assumes that all candidate models have already been downloaded to the local Hugging Face cache. If a model is not cached, disable offline mode or download the required checkpoints before running the script. Some model repositories may also require Hugging Face access approval.
+
 ## Step 1: Identify the Model Family with AEDR
 
 Run AEDR first to determine the target model family. Please refer to [wangchao0708/AEDR](https://github.com/wangchao0708/AEDR) for the AEDR workflow.
@@ -32,33 +48,53 @@ After AEDR identifies the model family, run the corresponding DNA script. For ex
 ```bash
 python Family_SD1.py
 python Family_SD2.py
-# ...
+...
 ```
 
 Select the script that matches the model family predicted by AEDR.
 
 | Script | Candidate source models included in the script |
 | --- | --- |
-| `Family_SD1.py` | `CompVis/stable-diffusion-v1-1`, `CompVis/stable-diffusion-v1-2`, `CompVis/stable-diffusion-v1-3`, `CompVis/stable-diffusion-v1-4`, `stable-diffusion-v1-5/stable-diffusion-v1-5` |
-| `Family_SD2.py` | `sd2-community/stable-diffusion-2-base`, `sd2-community/stable-diffusion-2-1-base`, `pbevan11/stable-diffusion-2-typography`, `Norod78/sd2-cartoon-blip` |
-| `Family_SD3.py` | `stabilityai/stable-diffusion-3-medium-diffusers`, `stabilityai/stable-diffusion-3.5-large`, `stabilityai/stable-diffusion-3.5-large-turbo`, `stabilityai/stable-diffusion-3.5-medium` |
-| `Family_SDXL.py` | `stabilityai/stable-diffusion-xl-base-1.0`, `stabilityai/stable-diffusion-xl-base-0.9`, `segmind/SSD-1B`, `segmind/Segmind-Vega` |
-| `Family_FLUX1.py` | `lodestones/Chroma1-HD`, `Freepik/flux.1-lite-8B`, `black-forest-labs/FLUX.1-dev`, `black-forest-labs/FLUX.1-Krea-dev` |
-| `Family_FLUX2.py` | `black-forest-labs/FLUX.2-dev`, `black-forest-labs/FLUX.2-klein-base-9B`, `black-forest-labs/FLUX.2-klein-base-4B` |
+| `Family_SD1.py` | `SD1.1`, `SD1.2`, `SD1.3`, `SD1.4`, `SD1.5` |
+| `Family_SD2.py` | `SD2-base`, `SD2.1-base`, `SD2-typography`, `SD2-cartoon` |
+| `Family_SD3.py` | `SD3-M`, `SD3.5-M`, `SD3.5-L`, `SD3.5-LT` |
+| `Family_SDXL.py` | `SDXL-0.9`, `SDXL-1.0`, `SSD-1B`, `Segmind-Vega` |
+| `Family_FLUX1.py` | `FLUX.1-dev`, `FLUX.1-Krea`, `FLUX.1-Lite`, `Chroma1-HD` |
+| `Family_FLUX2.py` | `FLUX.2-dev`, `FLUX.2-klein-base-9B`, `FLUX.2-klein-base-4B` |
 
-Before execution, edit the script and set the required runtime parameters. The public release intentionally leaves experiment-specific values empty or generic, so users should fill them according to their local dataset and evaluation setting.
+## Expected Image Directory Structure
 
-| Parameter to edit | Meaning | Reference value |
-| --- | --- | --- |
-| `IMAGE_ROOT` | Root directory of the images to be attributed. Each source model should have its own subfolder under this directory. | `"/path/to/your/images"` or `DNA_IMAGE_ROOT=/path/to/your/images` |
-| `NUM_IMAGES` | Maximum number of images loaded from each source folder. `None` uses all available images. | `None` or `500` |
-| `NUM_NOISE` | Number of noise samples used for each image-model pair. Larger values improve stability but increase computation. | `5`, `10`, or `30` |
-| `TIMESTEPS` | Selected diffusion timesteps for SD1, SD2, and SDXL scripts. | `[1, 11, 21, 31, 41]` |
-| `SIGMAS` | Selected flow-matching noise levels for SD3, FLUX.1, and FLUX.2 scripts. | `[0.0621, 0.0825, 0.1028, 0.1232, 0.1436]` |
-| `NOISE_SEED` | Random seed for reproducible fixed-noise generation. | `42` |
-| `BATCH_SIZE` | Batch size for UNet/Transformer inference. Adjust this value if GPU memory is limited. | `20`, `25`, or `100` |
-| `VAE_BATCH_SIZE` | Batch size for VAE encoding in FLUX-family scripts. This usually needs to be small. | `1` |
-| `USE_BLIP` | Whether to use BLIP-2 generated captions as prompts. If `False`, empty prompts are used. | `False` for unconditional evaluation, `True` when caption conditioning is needed |
+Each family script expects one folder per source model under `IMAGE_ROOT`. For example, an SD1-style image directory can be organized as:
+
+```text
+/path/to/your/images/
+  SD1.1/
+    000001.png
+    000002.png
+    ...
+  SD1.2/
+    000001.png
+    000002.png
+    ...
+  SD1.3/
+    000001.png
+    000002.png
+    ...
+  ...
+```
+
+For some families, folder names may include generation settings while model labels remain shorter in the CSV. For example, `SD2-base-resize` can correspond to the candidate model label `SD2-base`.
+
+Before execution, edit the script and set the required runtime parameters. The public release leaves experiment-specific values generic, so users should fill them according to their local dataset and evaluation setting.
+
+| Parameter | Meaning | Reference value |
+| --- | ---- | -- |
+| `IMAGE_ROOT` | Root directory of the images to be attributed. | `"/path/to/your/images"` |
+| `NUM_IMAGES` | Maximum number of images loaded from each source folder. | `500` |
+| `NUM_NOISE` | Number of noise samples used for each image-model pair. | `5`, `10`, `15`, `...` |
+| `TIMESTEPS` | Selected diffusion timesteps. | `[1, 11, 21, 31, 41, ...]` |
+| `SIGMAS` | Selected flow-matching noise levels. | `[0.0621, 0.0825, 0.1028, 0.1232, 0.1436, ...]` |
+| `NOISE_SEED` | Random seed for reproducible fixed-noise generation. | `123` |
 
 Each script writes a CSV file that is used by the final accuracy evaluation:
 
@@ -68,43 +104,77 @@ DNA_SD2_results.csv
 ...
 ```
 
-The remaining families follow the same naming style, for example `DNA_SD3_results.csv`, `DNA_SDXL_results.csv`, `DNA_FLUX1_results.csv`, and `DNA_FLUX2_results.csv`.
+## Minimal Runnable Example
+
+The repository includes a compact SD1 example:
+
+```text
+examples/DNA_SD1_results.csv
+```
+
+This file contains 10 images per SD1 source model, 30 noise samples per image-model pair, and the 25 selected timesteps used in the example evaluation. The first entry in `TEST_CONFIGS` in `Evaluate_Accuracy.py` is already configured for this file.
+
+Run:
+
+```bash
+python Evaluate_Accuracy.py
+```
+
+Expected result for the included example:
+
+```text
+File: DNA_SD1_results.csv
+Models: ['SD1.1', 'SD1.2', 'SD1.3', 'SD1.4', 'SD1.5']
+Images: 50
+Selected steps: [1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 131, 141, 151, 161, 171, 181, 191, 201, 211, 221, 231, 241]
+------------------------------------------------------------------------
+Accuracy without bias: 0.9400
+Accuracy with bias:    0.9800
+
+Per-class accuracy with bias:
+  SD1.1: 1.0000 (10/10)
+  SD1.2: 1.0000 (10/10)
+  SD1.3: 1.0000 (10/10)
+  SD1.4: 0.9000 (9/10)
+  SD1.5: 1.0000 (10/10)
+```
+
+The full expected console summary is provided in:
+
+```text
+examples/expected_sd1_output.txt
+```
 
 ## Step 3: Evaluate Attribution Accuracy
 
-Use `Evaluate_Accuracy.py` in test mode to compute attribution accuracy from the CSV files produced by the DNA family scripts.
+Use `Evaluate_Accuracy.py` to compute attribution accuracy from the CSV files produced by the DNA family scripts. The script keeps only the paper setting: z-score normalized D-style scoring over the selected timesteps or sigmas, followed by model-wise bias correction.
 
-The default `TEST_CONFIGS` entries already use the same CSV names listed above. Before running test mode, fill in each entry with the finalized parameters for that family:
+Before running evaluation, fill in each entry with the finalized parameters for that family:
 
 | Parameter | Meaning | Reference value |
 | --- | --- | --- |
-| `csv_path` | CSV file produced by the corresponding DNA family script. The file name should match the output of Step 2. | `"DNA_SD1_results.csv"` |
-| `n_noise` | Number of noise samples to read per image-model pair from the CSV. This should be the same as `NUM_NOISE` used in Step 2. | `5`, `10`, or `30` |
-| `score_type` | Scoring rule used to aggregate the MSE profile. Supported values include `avg`, `zscore`, `median`, `rank`, and `weighted`. | `"zscore"` |
-| `timesteps` | Selected timestep or sigma-index columns used for evaluation when `score_type` is not `weighted`. These values must exist in the CSV columns. | `[1, 11, 21, 31, 41]` |
-| `low_steps` / `high_steps` | Step groups used only when `score_type="weighted"`. | `low_steps=[1, 11, 21]`, `high_steps=[101, 111]` |
-| `weight_low` | Weight assigned to the low-step group for weighted scoring. | `0.5` |
-| `bias` | Model-wise bias correction learned or selected from validation experiments. Its length must match the number of candidate models in the family. | `[0.0, -0.5, -0.3, ...]` |
+| `csv_path` | CSV file produced by the corresponding DNA family script. | `"DNA_SD1_results.csv"` |
+| `n_noise` | Number of noise samples to read per image-model pair from the CSV. | `5`, `10`, `15`, `...` |
+| `timesteps` | Selected discriminative timestep or sigma-index columns. | `[1, 11, 21, 31, 41, ...]` |
+| `bias` | Model-wise bias correction selected from validation experiments. | `[0.0, -0.5, -0.3, ...]` |
 
 Example test configuration:
 
 ```python
 TEST_CONFIGS = [
     {
-        "csv_path": "DNA_SD1_results.csv",
+        "csv_path": "examples/DNA_SD1_results.csv",
         "n_noise": 30,
-        "score_type": "zscore",
-        "timesteps": [1, 11, 21, 31, 41],
-        "bias": [0.0, -0.5, -0.3, -0.2, -0.1],
+        "timesteps": [1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 131, 141, 151, 161, 171, 181, 191, 201, 211, 221, 231, 241],
+        "bias": [0.0, -1.238396, -1.182738, -1.161866, -1.113165],
     },
     {
         "csv_path": "DNA_SD2_results.csv",
         "n_noise": 5,
-        "score_type": "zscore",
         "timesteps": [61, 71, 81, 101, 111],
         "bias": [0.0, -0.4, -0.2, -0.1],
     },
-    # ...
+    ...
 ]
 ```
 
@@ -120,33 +190,44 @@ A typical test-mode output has the following structure:
 
 ```text
 ======================================================================
-  Model attribution [test mode]
-  GPU: Yes
-  number of test configurations: 6
+File: DNA_SD1_results.csv
+Models: ['SD1.1', 'SD1.2', 'SD1.3', 'SD1.4', 'SD1.5']
+Images: 2500
+Selected steps: [1, 11, 21, 31, 41, ...]
+------------------------------------------------------------------------
+Accuracy without bias: 0.9120
+Accuracy with bias:    0.9480
+
+Per-class accuracy with bias:
+  SD1.1: 0.9500 (475/500)
+  SD1.2: 0.9440 (472/500)
+  SD1.3: 0.9520 (476/500)
+  SD1.4: 0.9460 (473/500)
+  SD1.5: 0.9480 (474/500)
+
+Confusion matrix with bias (rows=true, columns=predicted):
 ======================================================================
-
-======================================================================
-  [TEST] file: DNA_SD1_results
-  noise count: 30  score type: zscore
-======================================================================
-  models(5): ['SD1.1', 'SD1.2', 'SD1.3', 'SD1.4', 'SD1.5']
-  images: 2500  timesteps: 25  range: [1, 241]
-  class distribution: {'SD1.1': 500, 'SD1.2': 500, 'SD1.3': 500, 'SD1.4': 500, 'SD1.5': 500}
-  timesteps (25 steps): [1, 11, 21, 31, 41, ...]
-  Bias: [0.000000, ...]
-
-  -- Results --
-  Accuracy (no bias): 0.9120  (2280/2500)
-  Accuracy (with bias): 0.9480  (2370/2500)
-
-  -- Per-class accuracy (with bias) --
-    SD1.1: 0.9500  (475/500)
-    SD1.2: 0.9440  (472/500)
-    SD1.3: 0.9520  (476/500)
-    SD1.4: 0.9460  (473/500)
-    SD1.5: 0.9480  (474/500)
-
-  -- Confusion matrix (with bias, rows=true, columns=predicted) --
 ```
 
 The exact numbers depend on the selected family, dataset, noise count, timesteps or sigmas, and bias values.
+
+## Configuration Templates
+
+The `configs/` directory provides lightweight reference templates:
+
+```text
+configs/family_sd1_example.json
+configs/evaluate_sd1_example.json
+```
+
+The scripts currently use Python constants for configuration. These JSON files are intended as readable templates; copy the relevant values into `Family_*.py` or `Evaluate_Accuracy.py` before running a full experiment.
+
+## Paper-to-Code Mapping
+
+| Paper component | Code location |
+| --- | --- |
+| AEDR family identification | External AEDR workflow |
+| Candidate-family native attribution | `Family_SD1.py`, `Family_SD2.py`, `Family_SD3.py`, `Family_SDXL.py`, `Family_FLUX1.py`, `Family_FLUX2.py` |
+| Per-noise MSE profile export | `RESULTS_CSV` written by each `Family_*.py` script |
+| Paper evaluation setting | `Evaluate_Accuracy.py` |
+| z-score D-style scoring with bias correction | `evaluate_one()` in `Evaluate_Accuracy.py` |

@@ -1,7 +1,4 @@
 import os
-os.environ["HF_HUB_OFFLINE"] = "1"
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
-os.environ["HF_DATASETS_OFFLINE"] = "1"
 import torch
 import numpy as np
 from PIL import Image
@@ -11,6 +8,12 @@ import json
 import gc
 import time
 from tqdm import tqdm
+
+# Key workflow:
+# 1. load images from source-model folders,
+# 2. encode images and prompts with each candidate SDXL-family model,
+# 3. compute denoising MSE profiles over selected timesteps and noise samples,
+# 4. save the per-noise MSE table for the final attribution evaluation.
 
 IMAGE_ROOT = os.environ.get('DNA_IMAGE_ROOT', '')
 SOURCE_FOLDERS = ['SDXL-0.9', 'SDXL-1.0', 'SSD', 'SV']
@@ -90,6 +93,7 @@ def load_image_tensor(path, size=1024):
 
 
 def generate_captions(image_paths, device='cuda'):
+    # Optional prompt construction: reuse cached BLIP-2 captions when available.
     if os.path.exists(BLIP_CACHE):
         print(f"  Found caption cache {BLIP_CACHE}, loading it directly...")
         with open(BLIP_CACHE, 'r') as f:
@@ -243,6 +247,7 @@ def main():
 
     start_time = time.time()
 
+    # Prepare the fixed-noise bank used by all candidate models in this family.
     print("=" * 70)
     print("  Improved MSE attribution: BLIP captions, multiple timesteps, aggregation, and fixed noise.")
     print("  Adapted for SDXL-family models; each candidate loads its own components.")

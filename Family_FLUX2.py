@@ -1,7 +1,4 @@
 import os
-os.environ["HF_HUB_OFFLINE"] = "1"
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
-os.environ["HF_DATASETS_OFFLINE"] = "1"
 import torch
 import numpy as np
 from PIL import Image
@@ -11,6 +8,12 @@ import json
 import gc
 import time
 from tqdm import tqdm
+
+# Key workflow:
+# 1. load images from source-model folders,
+# 2. encode images and prompts with each candidate FLUX.2 pipeline,
+# 3. compute flow-matching MSE profiles over selected sigmas and noise samples,
+# 4. save the per-noise MSE table for the final attribution evaluation.
 
 # ========================== Configuration ==========================
 IMAGE_ROOT = os.environ.get('DNA_IMAGE_ROOT', '')
@@ -104,6 +107,7 @@ def get_transformer_first_device(transformer):
 
 
 def generate_captions(image_paths, device='cuda:0'):
+    # Optional prompt construction: reuse cached BLIP-2 captions when available.
     if os.path.exists(BLIP_CACHE):
         print(f"  Found caption cache {BLIP_CACHE}, loading it directly...")
         with open(BLIP_CACHE, 'r') as f:
@@ -279,6 +283,7 @@ def main():
 
     start_time = time.time()
 
+    # Prepare the fixed-noise bank in official FLUX.2 latent-token space.
     print("=" * 70)
     print("  Improved MSE attribution: flow matching, BLIP captions, multiple sigmas, and fixed noise.")
     print("  Adapted for FLUX.2 with multi-GPU loading (device_map='balanced' / 'auto').")
