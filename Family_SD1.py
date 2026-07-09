@@ -9,6 +9,10 @@ import gc
 import time
 from tqdm import tqdm
 
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+os.environ["HF_DATASETS_OFFLINE"] = "1"
+
 # Key workflow:
 # 1. load images from source-model folders,
 # 2. encode images and prompts with each candidate SD1 model,
