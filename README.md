@@ -8,7 +8,7 @@ The released files contain the core attribution scripts used by DNA. Before runn
 
 ## Paper-to-Code Mapping
 
-| Paper component | Code location |
+| Paper | Code |
 | --- | --- |
 | AEDR | Please refer to [wangchao0708/AEDR](https://github.com/wangchao0708/AEDR) |
 | NPC | `Family_SD1.py`, `Family_SD2.py`, `Family_SD3.py`, `Family_SDXL.py`, `Family_FLUX1.py`, `Family_FLUX2.py` |
