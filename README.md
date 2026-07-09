@@ -10,11 +10,10 @@ The released files contain the core attribution scripts used by DNA. Before runn
 
 | Paper component | Code location |
 | --- | --- |
-| AEDR family identification | External AEDR workflow |
-| Candidate-family native attribution | `Family_SD1.py`, `Family_SD2.py`, `Family_SD3.py`, `Family_SDXL.py`, `Family_FLUX1.py`, `Family_FLUX2.py` |
-| Per-noise MSE profile export | `RESULTS_CSV` written by each `Family_*.py` script |
-| Paper evaluation setting | `Evaluate_Accuracy.py` |
-| z-score D-style scoring with bias correction | `evaluate_one()` in `Evaluate_Accuracy.py` |
+| AEDR | Please refer to [wangchao0708/AEDR](https://github.com/wangchao0708/AEDR) |
+| NPC | `Family_SD1.py`, `Family_SD2.py`, `Family_SD3.py`, `Family_SDXL.py`, `Family_FLUX1.py`, `Family_FLUX2.py` |
+| Output | `RESULTS_CSV` written by each `Family_*.py` script |
+| Evaluation | `Evaluate_Accuracy.py` |
 
 ## Environment
 
