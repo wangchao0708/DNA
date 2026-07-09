@@ -84,8 +84,6 @@ Each family script expects one folder per source model under `IMAGE_ROOT`. For e
   ...
 ```
 
-For some families, folder names may include generation settings while model labels remain shorter in the CSV. For example, `SD2-base-resize` can correspond to the candidate model label `SD2-base`.
-
 Before execution, edit the script and set the required runtime parameters. The public release leaves experiment-specific values generic, so users should fill them according to their local dataset and evaluation setting.
 
 | Parameter | Meaning | Reference value |
