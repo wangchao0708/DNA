@@ -46,7 +46,7 @@ Select the script that matches the model family predicted by AEDR.
 | `Family_FLUX1.py` | `FLUX.1-dev`, `FLUX.1-Krea`, `FLUX.1-Lite`, `Chroma1-HD` |
 | `Family_FLUX2.py` | `FLUX.2-dev`, `FLUX.2-klein-base-9B`, `FLUX.2-klein-base-4B` |
 
-Before execution, edit the script and set the required runtime parameters. The public release intentionally leaves experiment-specific values empty or generic, so users should fill them according to their local dataset and evaluation setting.
+Before execution, edit the script and set the required runtime parameters. The public release leaves experiment-specific values generic, so users should fill them according to their local dataset and evaluation setting.
 
 | Parameter | Meaning | Reference value |
 | --- | ---- | -- |
@@ -67,9 +67,7 @@ DNA_SD2_results.csv
 
 ## Step 3: Evaluate Attribution Accuracy
 
-Use `Evaluate_Accuracy.py` in test mode to compute attribution accuracy from the CSV files produced by the DNA family scripts.
-
-Before running test mode, fill in each entry with the finalized parameters for that family:
+Use `Evaluate_Accuracy.py` in test mode to compute attribution accuracy from the CSV files produced by the DNA family scripts. Before running test mode, fill in each entry with the finalized parameters for that family:
 
 | Parameter | Meaning | Reference value |
 | --- | --- | --- |
