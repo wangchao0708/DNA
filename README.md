@@ -6,7 +6,7 @@ This repository hosts the official PyTorch implementation of the paper:
 
 The released files contain the core attribution scripts used by DNA. Before running the code, users should configure their own image paths, selected timesteps or sigmas, noise counts, random seeds, and output settings.
 
-# Environment
+## Environment
 
 Create and activate the conda environment:
 
@@ -106,7 +106,7 @@ Run:
 python Evaluate_Accuracy.py
 ```
 
-# Example Test Output
+## Example Test Output
 
 A typical test-mode output has the following structure:
 
