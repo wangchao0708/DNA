@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+
+DNA_*_results.csv
+DNA_*_summary.json
+DNA_*_blip_captions.json
+test_configs_out/
