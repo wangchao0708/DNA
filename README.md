@@ -2,7 +2,7 @@
 
 This repository hosts the official PyTorch implementation of the paper:
 
-**“DNA: Tracing Generated Images to Source Models via Dual-stage Native Attribution”**
+**“DNA: Dual-stage Native Attribution for Generated Image Source Tracing”**
 
 The released files contain the core attribution scripts used by DNA. Before running the code, users should configure their own image paths, selected timesteps or sigmas, noise counts, random seeds, and output settings.
 
